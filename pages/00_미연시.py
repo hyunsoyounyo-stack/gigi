@@ -59,19 +59,29 @@ if "love_point" not in st.session_state:
 if "selected_choice_1" not in st.session_state:
     st.session_state.selected_choice_1 = None
 
-# 3. 사이드바 - 기시 유스케의 호감도 표시 영역 (가로 막대바 커스텀)
+# --- [NEW] RPG 시스템 변수 초기화 ---
+if "stats" not in st.session_state:
+    st.session_state.stats = {
+        "외모": 50,
+        "정신력": 50,
+        "체력": 50,
+        "입담": 50,
+        "전투": 50
+    }
+if "inventory" not in st.session_state:
+    st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
+
+
+# 3. 사이드바 - 캐릭터 프로필 / 호감도 / 스탯 / 인벤토리 영역
 with st.sidebar:
-    st.markdown("### PORT MAFIA")
+    st.markdown("### 👤 PLAYER STATUS")
     st.write("---")
-    st.markdown("#### 공략 대상")
-    st.subheader("기시 유스케")
     
-    # --- 가로형 양방향 호감도 막대바 연출 ---
+    # 공략 대상 및 호감도 막대바
+    st.markdown("#### 공략 대상: 기시 유스케")
     lp = st.session_state.love_point
-    # 값 제한 (-100 ~ 100)
     lp = max(-100, min(100, lp))
     
-    # HTML/CSS 기반 양방향 게이지 바 생성
     if lp >= 0:
         left_space = 50
         bar_width = (lp / 100) * 50
@@ -84,22 +94,64 @@ with st.sidebar:
         shadow_color = "#4a90e2"
 
     gauge_html = f"""
-    <div style="margin-bottom: 5px; font-size: 14px; font-weight: bold; color: #e0e0e0;">
+    <div style="margin-bottom: 5px; font-size: 13px; font-weight: bold; color: #e0e0e0;">
         호감도: <span style="color: {bar_color}; text-shadow: 0 0 5px {shadow_color};">{st.session_state.love_point}</span>
     </div>
-    <div style="width: 100%; background-color: #222; height: 12px; border-radius: 6px; position: relative; overflow: hidden; border: 1px solid #444;">
+    <div style="width: 100%; background-color: #222; height: 10px; border-radius: 5px; position: relative; overflow: hidden; border: 1px solid #444; margin-bottom: 20px;">
         <div style="position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background-color: #555; z-index: 2;"></div>
-        <div style="position: absolute; left: {left_space}%; width: {bar_width}%; height: 100%; background-color: {bar_color}; box-shadow: 0 0 8px {shadow_color}; transition: all 0.5s ease; z-index: 1;"></div>
+        <div style="position: absolute; left: {left_space}%; width: {bar_width}%; height: 100%; background-color: {bar_color}; box-shadow: 0 0 8px {shadow_color}; z-index: 1;"></div>
     </div>
     """
     st.markdown(gauge_html, unsafe_allow_html=True)
     st.write("---")
     
+    # [NEW] 5대 스탯창 구현 함수
+    st.markdown("#### 📊 보유 스탯")
+    
+    def render_stat_bar(stat_name, value, color):
+        val = max(0, min(100, value))
+        stat_html = f"""
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px; color: #ccc;">
+            <span>{stat_name}</span>
+            <span style="font-weight: bold; color: {color};">{val} / 100</span>
+        </div>
+        <div style="width: 100%; background-color: #1a1a1a; height: 6px; border-radius: 3px; border: 1px solid #333; margin-bottom: 10px; overflow: hidden;">
+            <div style="width: {val}%; height: 100%; background-color: {color};"></div>
+        </div>
+        """
+        st.markdown(stat_html, unsafe_allow_html=True)
+
+    render_stat_bar("외모 💜", st.session_state.stats["외모"], "#da70d6")
+    render_stat_bar("정신력 🩵", st.session_state.stats["정신력"], "#00bfff")
+    render_stat_bar("체력 💚", st.session_state.stats["체력"], "#32cd32")
+    render_stat_bar("입담 💛", st.session_state.stats["입담"], "#ffd700")
+    render_stat_bar("전투 ❤️", st.session_state.stats["전투"], "#ff4500")
+    
+    st.write("---")
+    
+    # [NEW] 인벤토리 창 구현
+    st.markdown("#### 🎒 인벤토리")
+    if st.session_state.inventory:
+        # 아이템들을 둥근 배지 형태로 나열
+        inv_html = '<div style="display: flex; flex-wrap: wrap; gap: 5px;">'
+        for item in st.session_state.inventory:
+            inv_html += f'<span style="background-color: #222; color: #aaa; border: 1px solid #444; padding: 3px 8px; border-radius: 12px; font-size: 12px;">📦 {item}</span>'
+        inv_html += '</div>'
+        st.markdown(inv_html, unsafe_allow_html=True)
+    else:
+        st.caption("비어 있음")
+        
+    st.write("---")
+    
+    # 리셋 버튼
     if st.button("처음부터 다시 시작"):
         st.session_state.stage = 1
         st.session_state.love_point = 0
         st.session_state.selected_choice_1 = None
+        st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
+        st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
         st.rerun()
+
 
 # 4. 메인 스토리 영역
 st.title("문호 스트레이독스: 포트 마피아 내부")
@@ -130,16 +182,26 @@ elif st.session_state.stage == 2:
     
     if st.button("> 겁에 질려 팔을 휘적인다."):
         st.session_state.love_point -= 10
+        # 예시: 팔을 마구 휘둘렀으니 전투 스탯이 2 오르고, 정신력이 5 깎임
+        st.session_state.stats["전투"] += 2
+        st.session_state.stats["정신력"] -= 5
+        
         st.session_state.selected_choice_1 = 1
         st.session_state.stage = 3
         st.rerun()
         
     if st.button("> 깜짝 놀라 몸을 굳힌다."):
+        # 예시: 굳어버렸으니 정신력이 2 깎임
+        st.session_state.stats["정신력"] -= 2
+        
         st.session_state.selected_choice_1 = 2
         st.session_state.stage = 3
         st.rerun()
         
     if st.button('> "안녕?" 태연하게 인사한다.'):
+        # 예시: 이런 상황에서 인사를 건네다니! 입담이 5 오름
+        st.session_state.stats["입담"] += 5
+        
         st.session_state.selected_choice_1 = 3
         st.session_state.stage = 3
         st.rerun()
@@ -166,7 +228,6 @@ elif st.session_state.stage == 3:
         st.write('"(여기에 3번 대사를 입력하세요)"')
 
     st.write("---")
-    # 🛠️ 이 부분 끝에 콜론(:)을 넣어 정상적으로 수정했습니다.
     if st.button("> 상황 계속 진행하기"):
         st.session_state.stage = 4
         st.rerun()
@@ -192,4 +253,12 @@ elif st.session_state.stage == 4:
 
 # ==========================================================
 # STAGE 5: 세 번째 상황
-# =
+# ==========================================================
+elif st.session_state.stage == 5:
+    st.write("(그 이후의 상황 묘사를 이곳에 적어주세요.)")
+    st.write("")
+    st.write('"(대사)"')
+    st.write("")
+    
+    if st.button("> 다음 상황으로"):
+        st.write("스토리가 준비 중입니다.")
