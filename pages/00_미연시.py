@@ -119,7 +119,7 @@ with st.sidebar:
     st.markdown(gauge_html, unsafe_allow_html=True)
     st.write("---")
     
-    # 5대 스탯창 구현 (이모티콘 제거 버전)
+    # 5대 스탯창 구현
     st.markdown("#### 보유 스탯")
     
     def render_stat_bar(stat_name, value, color):
@@ -143,7 +143,7 @@ with st.sidebar:
     
     st.write("---")
     
-    # 인벤토리 창 (이모티콘 제거 버전)
+    # 인벤토리 창
     st.markdown("#### 인벤토리")
     if st.session_state.inventory:
         inv_html = '<div style="display: flex; flex-wrap: wrap; gap: 5px;">'
@@ -181,7 +181,7 @@ if st.session_state.stage == 0:
     st.write("포트 마피아에 입사하신 것을 환영합니다! 본 웹사이트는 포트마피아의 드림주, 기시 유스케와 연관된 미연시 게임입니다. 잘 부탁드립니다!")
     st.write("")
     
-    # 캐릭터 커스텀 UI (입력창 및 클릭 선택창 혼합)
+    # 캐릭터 커스텀 UI
     input_name = st.text_input("당신의 이름을 입력해 주세요", value="신입", max_chars=10)
     
     col1, col2, col3 = st.columns(3)
@@ -206,13 +206,11 @@ if st.session_state.stage == 0:
     
     # 시작 버튼 연출
     if st.button("▶ 스토리 시작하기"):
-        # 입력 및 선택된 커스텀 데이터들을 세션 상태에 저장
         st.session_state.player_name = input_name
         st.session_state.hair_color = select_hair_color
         st.session_state.hair_length = select_hair_length
         st.session_state.eye_color = select_eye_color
         
-        # 기본 초기값 세팅 및 시작
         st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
         st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
         st.session_state.stage = 1
@@ -236,14 +234,14 @@ elif st.session_state.stage == 1:
         st.rerun()
 
 # ==========================================================
-# STAGE 2: 이어지는 연출 (귀신 조우)
+# STAGE 2: 이어지는 연출 (귀신 조우) -> 선택지 사이 가로선 제거
 # ==========================================================
 elif st.session_state.stage == 2:
     st.markdown("### 포트 마피아 내부")
     st.write("---")
     st.write("숨이 턱 막히는 공포 속에서 흐릿한 시야를 간신히 넓혀봅니다. 눈앞까지 다가온 것은 다름 아닌 허공을 일렁이는 거대한 하얀 천이었습니다.")
     st.write("귀신? 아니면 악명 높은 포트 마피아의 잔혹한 이능력자일까요? 이 어두운 지하에서 마주친 이질적인 존재에 온몸의 털이 곤두섭니다.")
-    st.write("")
+    st.write("") # 본문 서술과 선택지 사이 가로선 제거 및 여백 유지
     
     if st.button("> 겁에 질려 팔을 휘적인다."):
         st.session_state.love_point -= 10
@@ -303,7 +301,7 @@ elif st.session_state.stage == 3:
         st.rerun()
 
 # ==========================================================
-# STAGE 4: 두 번째 상황 (사용자 직접 작성용)
+# STAGE 4: 두 번째 상황 (사용자 직접 작성용) -> 선택지 사이 가로선 제거
 # ==========================================================
 elif st.session_state.stage == 4:
     st.markdown("### 포트 마피아 내부")
@@ -311,7 +309,7 @@ elif st.session_state.stage == 4:
     st.write("(다음 포트 마피아 내부 상황 묘사를 이곳에 적어주세요.)")
     st.write("")
     st.write('"(대사)"')
-    st.write("")
+    st.write("") # 가로선 제거 및 여백 유지
     
     if st.button("> (선택지 4)"):
         st.session_state.love_point += 10
