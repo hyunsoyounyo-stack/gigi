@@ -51,9 +51,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 강조용 텍스트 스타일 정의
-pink_style = '<span style="color: #FF69B4; font-weight: bold; font-size: 28px; text-shadow: 0 0 10px #FF69B4;">♥ {}</span>'
-
 # 2. 세션 상태(Session State) 변수 초기화
 if "stage" not in st.session_state:
     st.session_state.stage = 1
@@ -62,14 +59,42 @@ if "love_point" not in st.session_state:
 if "selected_choice_1" not in st.session_state:
     st.session_state.selected_choice_1 = None
 
-# 3. 사이드바 - 기시 유스케의 호감도 표시 영역
+# 3. 사이드바 - 기시 유스케의 호감도 표시 영역 (가로 막대바 커스텀)
 with st.sidebar:
     st.markdown("### PORT MAFIA")
     st.write("---")
     st.markdown("#### 공략 대상")
     st.subheader("기시 유스케")
     
-    st.markdown(f"**호감도:** {pink_style.format(st.session_state.love_point)}", unsafe_allow_html=True)
+    # --- 가로형 양방향 호감도 막대바 연출 ---
+    lp = st.session_state.love_point
+    # 값 제한 (-100 ~ 100)
+    lp = max(-100, min(100, lp))
+    
+    # HTML/CSS 기반 양방향 게이지 바 생성
+    if lp >= 0:
+        # 플러스일 때: 중간(50%)에서 오른쪽으로 분홍색(#FF69B4) 확장
+        left_space = 50
+        bar_width = (lp / 100) * 50
+        bar_color = "#FF69B4"
+        shadow_color = "#FF69B4"
+    else:
+        # 마이너스일 때: 중간(50%)에서 왼쪽으로 파란색(#4a90e2) 확장
+        bar_width = (abs(lp) / 100) * 50
+        left_space = 50 - bar_width
+        bar_color = "#4a90e2"
+        shadow_color = "#4a90e2"
+
+    gauge_html = f"""
+    <div style="margin-bottom: 5px; font-size: 14px; font-weight: bold; color: #e0e0e0;">
+        호감도: <span style="color: {bar_color}; text-shadow: 0 0 5px {shadow_color};">{st.session_state.love_point}</span>
+    </div>
+    <div style="width: 100%; background-color: #222; height: 12px; border-radius: 6px; position: relative; overflow: hidden; border: 1px solid #444;">
+        <div style="position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background-color: #555; z-index: 2;"></div>
+        <div style="position: absolute; left: {left_space}%; width: {bar_width}%; height: 100%; background-color: {bar_color}; box-shadow: 0 0 8px {shadow_color}; transition: all 0.5s ease; z-index: 1;"></div>
+    </div>
+    """
+    st.markdown(gauge_html, unsafe_allow_html=True)
     st.write("---")
     
     if st.button("처음부터 다시 시작"):
@@ -106,7 +131,7 @@ elif st.session_state.stage == 2:
     st.write("")
     
     if st.button("> 겁에 질려 팔을 휘적인다."):
-        st.session_state.love_point -= 10  # 👈 내부적으로만 호감도 감소 계산
+        st.session_state.love_point -= 10
         st.session_state.selected_choice_1 = 1
         st.session_state.stage = 3
         st.rerun()
@@ -116,64 +141,4 @@ elif st.session_state.stage == 2:
         st.session_state.stage = 3
         st.rerun()
         
-    if st.button('> "안녕?" 태연하게 인사한다.'):
-        st.session_state.selected_choice_1 = 3
-        st.session_state.stage = 3
-        st.rerun()
-
-# ==========================================================
-# STAGE 3: 선택지에 따른 유스케의 반응 (알림 텍스트 제거)
-# ==========================================================
-elif st.session_state.stage == 3:
-    if st.session_state.selected_choice_1 == 1:
-        st.write("당신이 겁에 질려 비명을 지르며 마구 팔을 휘두르자, 하얀 천을 쓴 형체가 예상치 못한 움직임에 멈칫하더니 뒤로 한 발자국 물러납니다. 천 너머에서 작은 한숨소리가 들려오는 것만 같습니다. 사람?")
-        st.write("")
-        st.write('"하아...... 신입? 멋대로 움직이지마, 진짜 귀신이라도 나올지 모르잖아?"')
-        st.write("")
-        st.write("상대를 귀신으로 착각한 속내를 들킨 것만 같아 심장이 콩닥콩닥해졌습니다.")
-        
-    elif st.session_state.selected_choice_1 == 2:
-        st.write("공포에 질려 손가락 하나 움직이지 못하고 몸이 완전히 굳어버린 당신. 천을 쓴 수수께끼의 형체는 그런 당신의 앞에 우뚝 서서 가만히 시선을 던집니다.")
-        st.write("")
-        st.write('"(여기에 2번 대사를 입력하세요)"')
-        
-    elif st.session_state.selected_choice_1 == 3:
-        st.write("공포를 이겨내고, 스산한 마피아 지하 통로에 어울리지 않는 태연하고 쾌활한 인사를 건넵니다. 그러자 백색의 형체가 어이없다는 듯 그 자리에 뚝 멈춰 섭니다.")
-        st.write("")
-        st.write('"(여기에 3번 대사를 입력하세요)"')
-
-    st.write("---")
-    if st.button("> 상황 계속 진행하기"):
-        st.session_state.stage = 4
-        st.rerun()
-
-# ==========================================================
-# STAGE 4: 두 번째 상황 (사용자 직접 작성용)
-# ==========================================================
-elif st.session_state.stage == 4:
-    st.write("(다음 포트 마피아 내부 상황 묘사를 이곳에 적어주세요.)")
-    st.write("")
-    st.write('"(대사)"')
-    st.write("")
-    
-    if st.button("> (선택지 4)"):
-        st.session_state.love_point += 10  # 👈 호감도 수치 수정하기 편하게 유지
-        st.session_state.stage = 5
-        st.rerun()
-        
-    if st.button("> (선택지 5)"):
-        st.session_state.love_point += 5
-        st.session_state.stage = 5
-        st.rerun()
-
-# ==========================================================
-# STAGE 5: 세 번째 상황
-# ==========================================================
-elif st.session_state.stage == 5:
-    st.write("(그 이후의 상황 묘사를 이곳에 적어주세요.)")
-    st.write("")
-    st.write('"(대사)"')
-    st.write("")
-    
-    if st.button("> 다음 상황으로"):
-        st.write("스토리가 준비 중입니다.")
+    if st.button
