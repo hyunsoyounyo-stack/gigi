@@ -24,10 +24,10 @@ st.markdown("""
         border-radius: 5px;
     }
     
-    /* [CRITICAL] 선택지 버튼을 DoL 스타일의 기본 파란색 글씨로 강력 고정 */
+    /* 선택지 버튼을 DoL 스타일의 기본 파란색 글씨로 강력 고정 */
     div.stButton > button {
         background-color: transparent !important;
-        color: #4a90e2 !important; /* 👈 기본 상태 파란색 글씨 강제 */
+        color: #4a90e2 !important;
         border: none !important;
         padding: 4px 0px !important;
         font-size: 16px !important;
@@ -70,7 +70,7 @@ if "love_point" not in st.session_state:
 if "selected_choice_1" not in st.session_state:
     st.session_state.selected_choice_1 = None
 
-# 3. 사이드바 - 기시 유스케의 호감도 표시 영역 (분홍색 고정)
+# 3. 사이드바 - 기시 유스케의 호감도 표시 영역
 with st.sidebar:
     st.markdown("### PORT MAFIA")
     st.write("---")
@@ -91,11 +91,12 @@ st.title("문호 스트레이독스: 포트 마피아 내부")
 st.write("---")
 
 # ==========================================================
-# STAGE 1: 오프닝 씬 (지하 입구 조우)
+# STAGE 1: 오프닝 서술 (길게 보강된 첫 번째 페이지)
 # ==========================================================
 if st.session_state.stage == 1:
-    st.write("당신은 포트 마피아 지하의 스산한 입구에 서 있습니다. 처음으로 발을 내딛은 이곳은 낯설기만 합니다.")
-    st.write("그때, 당신의 앞으로 천을 뒤집어 쓴 형체가 나타납니다.")
+    st.write("당신은 포트 마피아의 신입입니다.")
+    st.write("불쌍하게도 선배들의 텃세에 의해 가장 오기 싫었던 지하로 오게 된 당신, 마피아의 지하는 어둡고 스산하기만 합니다...... 서린 냉기가 바지 밑단을 스치는 기분에, 당신은 저절로 몸을 움츠립니다.")
+    st.write("그때, 갑작스레 당신의 앞으로 무언가가 빠르게 다가옵니다!")
     
     st.write("")
     if st.button("> 다음"):
@@ -103,25 +104,27 @@ if st.session_state.stage == 1:
         st.rerun()
 
 # ==========================================================
-# STAGE 2: 첫 번째 선택지 분기 (파란색 글씨 적용 완료)
+# STAGE 2: 이어지는 연출 (귀신 조우)
 # ==========================================================
 elif st.session_state.stage == 2:
-    st.write("당신의 눈앞에 나타난 정체불명의 형체. 일촉즉발의 상황에서 당신은 어떻게 행동하시겠습니까?")
+    st.write("흐릿한 시야로 넘겨보니 하얀 천이 보입니다. 귀신! 귀신일까요?")
     st.write("")
     
-    # 기본 상태에서 파란색 글로 보이며, 세로로 나열됩니다.
+    # DoL 블루 스타일로 출력되는 선택지
     if st.button("> 겁에 질려 팔을 휘적인다."):
-        st.session_state.love_point -= 10
+        st.session_state.love_point -= 10  # 첫 번째 선택지 호감도 -10
         st.session_state.selected_choice_1 = 1
         st.session_state.stage = 3
         st.rerun()
         
     if st.button("> 깜짝 놀라 몸을 굳힌다."):
+        # 변동 없음 (+0)
         st.session_state.selected_choice_1 = 2
         st.session_state.stage = 3
         st.rerun()
         
     if st.button('> "안녕?" 태연하게 인사한다.'):
+        # 변동 없음 (+0)
         st.session_state.selected_choice_1 = 3
         st.session_state.stage = 3
         st.rerun()
