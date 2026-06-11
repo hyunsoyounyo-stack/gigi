@@ -247,7 +247,6 @@ elif st.session_state.stage == 2:
     
     if st.button("> 겁에 질려 팔을 휘적인다."):
         st.session_state.love_point -= 10
-        st.session_state.stats["전투"] += 2
         st.session_state.stats["정신력"] -= 5
         st.session_state.selected_choice_1 = 1
         st.session_state.stage = 3
@@ -259,7 +258,7 @@ elif st.session_state.stage == 2:
         st.session_state.stage = 3
         st.rerun()
         
-    if st.button('> "안녕?" 태연하게 인사한다.'):
+    if st.button('> "안녕하세요." 태연하게 말 건넨다.'):
         st.session_state.stats["입담"] += 5
         st.session_state.selected_choice_1 = 3
         st.session_state.stage = 3
@@ -279,7 +278,7 @@ elif st.session_state.stage == 3:
         st.write("상대를 귀신으로 착각한 속내를 들킨 것만 같아 심장이 콩닥콩닥해졌습니다.")
         
     elif st.session_state.selected_choice_1 == 2:
-        st.write("공포에 질려 손가락 하나 움직이지 못하고 몸이 완전히 굳어버린 당신. 천을 쓴 수수께끼의 형체는 그런 당신의 앞에 우뚝 서서 가만히 시선을 던집니다.")
+        st.write("갑작스런 상황에 반응도 못하고 멈췄습니다.")
         st.write("")
         st.write('"(여기에 2번 대사를 입력하세요)"')
         
