@@ -1,6 +1,6 @@
 import streamlit as st
 
-# 1. 페이지 설정 및 다크 테마 + DoL 스타일 CSS 주입
+# 1. 페이지 설정 및 다크 테마 + DoL 블루 링크 스타일 CSS 주입
 st.set_page_config(page_title="포트마피아 내부 상황", layout="centered")
 
 st.markdown("""
@@ -24,10 +24,10 @@ st.markdown("""
         border-radius: 5px;
     }
     
-    /* [CRITICAL] 스트림릿 버튼을 DoL 스타일의 텍스트 링크로 커스텀 */
+    /* [CRITICAL] 스트림릿 버튼을 DoL 스타일의 기본 파란색 링크로 커스텀 */
     div.stButton > button {
         background-color: transparent !important;
-        color: #e0e0e0 !important;
+        color: #4a90e2 !important; /* 👈 기본 상태에서 파란색으로 표시 */
         border: none !important;
         padding: 4px 0px !important;
         font-size: 16px !important;
@@ -37,17 +37,17 @@ st.markdown("""
         transition: color 0.2s ease;
     }
     
-    /* 마우스를 올렸을 때 분홍색으로 변하고 밑줄이 생김 (DoL 링크 스타일) */
+    /* 마우스를 올렸을 때 (더 밝은 파란색 + 밑줄) */
     div.stButton > button:hover {
-        color: #FF69B4 !important;
+        color: #70a1ff !important;
         background-color: transparent !important;
         text-decoration: underline !important;
     }
     
-    /* 버튼 클릭 시 회색 잔상 제거 */
+    /* 버튼 클릭 시 또는 포커스 시 잔상 및 색상 고정 */
     div.stButton > button:active, div.stButton > button:focus {
         background-color: transparent !important;
-        color: #FF69B4 !important;
+        color: #70a1ff !important;
         box-shadow: none !important;
     }
     
@@ -104,13 +104,13 @@ if st.session_state.stage == 1:
         st.rerun()
 
 # ==========================================================
-# STAGE 2: 첫 번째 선택지 분기 (DoL 텍스트 스타일)
+# STAGE 2: 첫 번째 선택지 분기 (파란색 DoL 텍스트 스타일)
 # ==========================================================
 elif st.session_state.stage == 2:
     st.write("당신의 눈앞에 나타난 정체불명의 형체. 일촉즉발의 상황에서 당신은 어떻게 행동하시겠습니까?")
     st.write("")
     
-    # DoL 게임처럼 세로로 나열되는 텍스트 링크형 선택지
+    # 기본 파란색으로 노출되는 선택지 링크들
     if st.button("> 겁에 질려 팔을 휘적인다."):
         st.session_state.love_point -= 10
         st.session_state.selected_choice_1 = 1
@@ -163,7 +163,6 @@ elif st.session_state.stage == 4:
     st.info("기시 유스케: (대사)")
     st.write("")
     
-    # 아래 선택지들도 동일하게 텍스트 링크 스타일로 출력됩니다.
     if st.button("> (선택지 4)"):
         st.session_state.love_point += 10
         st.session_state.stage = 5
