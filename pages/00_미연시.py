@@ -1,4 +1,4 @@
-    import streamlit as st
+import streamlit as st
 
 # 1. 페이지 설정 및 다크 테마 + DoL 블루 링크 스타일 CSS 주입
 st.set_page_config(page_title="포트마피아 내부 상황", layout="centered")
