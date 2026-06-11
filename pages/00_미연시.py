@@ -45,7 +45,7 @@ st.markdown("""
     }
     
     /* 입력창 배경 다크톤 조절 */
-    div[data-testid="stTextInput"] input, div[data-testid="stSelectbox"] select {
+    div[data-testid="stTextInput"] input {
         background-color: #1a1a1a !important;
         color: #e0e0e0 !important;
         border: 1px solid #444 !important;
@@ -60,9 +60,18 @@ st.markdown("""
 
 # 2. 세션 상태(Session State) 변수 초기화
 if "stage" not in st.session_state:
-    st.session_state.stage = 0  # 👈 0번 스테이지를 '캐릭터 설정 화면'으로 정의합니다.
+    st.session_state.stage = 0  # 0번 스테이지: 캐릭터 설정 화면
 if "player_name" not in st.session_state:
     st.session_state.player_name = "신입"
+
+# --- [NEW] 외형 관련 세션 변수 추가 ---
+if "hair_color" not in st.session_state:
+    st.session_state.hair_color = "흑발"
+if "hair_length" not in st.session_state:
+    st.session_state.hair_length = "단발"
+if "eye_color" not in st.session_state:
+    st.session_state.eye_color = "흑안"
+
 if "love_point" not in st.session_state:
     st.session_state.love_point = 0
 if "selected_choice_1" not in st.session_state:
@@ -78,7 +87,9 @@ if "inventory" not in st.session_state:
 # 3. 사이드바 - 캐릭터 프로필 / 호감도 / 스탯 / 인벤토리 영역
 with st.sidebar:
     st.markdown("### 👤 PLAYER STATUS")
-    st.write(f"**이름:** {st.session_state.player_name}")
+    st.markdown(f"**이름:** {st.session_state.player_name}")
+    # --- [NEW] 외형 정보 사이드바 표시 ---
+    st.markdown(f"**외형:** {st.session_state.hair_color} / {st.session_state.hair_length} / {st.session_state.eye_color}")
     st.write("---")
     
     # 공략 대상 및 호감도 막대바
@@ -150,6 +161,9 @@ with st.sidebar:
     if st.button("처음부터 다시 시작"):
         st.session_state.stage = 0
         st.session_state.player_name = "신입"
+        st.session_state.hair_color = "흑발"
+        st.session_state.hair_length = "단발"
+        st.session_state.eye_color = "흑안"
         st.session_state.love_point = 0
         st.session_state.selected_choice_1 = None
         st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
@@ -159,46 +173,40 @@ with st.sidebar:
 
 # 4. 메인 디자인 및 스테이지 제어 영역
 # ==========================================================
-# STAGE 0: 시작 전 캐릭터 설정창 (NEW)
+# STAGE 0: 시작 전 캐릭터 외형 설정창
 # ==========================================================
 if st.session_state.stage == 0:
     st.markdown("<h1 style='text-align: center; color: #FF69B4 !important; text-shadow: 0 0 15px rgba(255,105,180,0.5); font-size: 36px;'>문호 스트레이독스 기반 자캐 연애 시뮬레이션</h1>", unsafe_allow_html=True)
     st.write("---")
     
-    st.write("포트 마피아에 입사하신 것을 환영합니다. 밤의 안개를 헤쳐 나가기 전, 당신의 신상명세를 먼저 작성해 주세요.")
+    st.write("포트 마피아에 입사하신 것을 환영합니다. 밤의 안개를 헤쳐 나가기 전, 당신의 신상명세와 외견을 먼저 작성해 주세요.")
     st.write("")
     
-    # 캐릭터 커스텀 폼
+    # 캐릭터 커스텀 텍스트 입력 UI
     input_name = st.text_input("당신의 이름을 입력해 주세요", value="신입", max_chars=10)
     
-    stat_preset = st.selectbox(
-        "당신의 초기 성향(재능)을 선택해 주세요",
-        ["평범한 생존자", "천생 마피아", "화술의 달인", "요코하마 절세가인"]
-    )
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        input_hair_color = st.text_input("머리 색 (예: 백발, 흑발)", value="흑발", max_chars=10)
+    with col2:
+        input_hair_length = st.text_input("머리 길이 (예: 장발, 단발)", value="단발", max_chars=10)
+    with col3:
+        input_eye_color = st.text_input("눈 색 (예: 적안, 벽안)", value="흑안", max_chars=10)
     
     st.write("")
     st.write("---")
     
     # 시작 버튼 연출
     if st.button("▶ 스토리 시작하기"):
-        # 플레이어 이름 저장
+        # 입력된 커스텀 데이터들을 세션 상태에 저장
         st.session_state.player_name = input_name
+        st.session_state.hair_color = input_hair_color
+        st.session_state.hair_length = input_hair_length
+        st.session_state.eye_color = input_eye_color
         
-        # 선택 프레셋별 스탯 및 인벤토리 가중치 부여
-        if stat_preset == "천생 마피아":
-            st.session_state.stats = {"외모": 40, "정신력": 50, "체력": 75, "입담": 40, "전투": 80}
-            st.session_state.inventory = ["조직원 배지", "동전 몇 개", "지급용 무디 단검"]
-        elif stat_preset == "화술의 달인":
-            st.session_state.stats = {"외모": 55, "정신력": 70, "체력": 45, "입담": 80, "전투": 35}
-            st.session_state.inventory = ["조직원 배지", "동전 몇 개", "눈속임용 사탕 한 봉지"]
-        elif stat_preset == "요코하마 절세가인":
-            st.session_state.stats = {"외모": 85, "정신력": 60, "체력": 45, "입담": 60, "전투": 35}
-            st.session_state.inventory = ["조직원 배지", "동전 몇 개", "고급 손수건"]
-        else: # 평범한 생존자
-            st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
-            st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
-            
-        # 첫 번째 스토리 페이지로 이동
+        # 기본 초기값 세팅 및 시작
+        st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
+        st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
         st.session_state.stage = 1
         st.rerun()
 
