@@ -44,8 +44,8 @@ st.markdown("""
         box-shadow: none !important;
     }
     
-    /* 입력창 배경 다크톤 조절 */
-    div[data-testid="stTextInput"] input {
+    /* 입력창 및 선택 상자(Selectbox) 배경 다크톤 조절 */
+    div[data-testid="stTextInput"] input, div[data-testid="stSelectbox"] div[data-baseweb="select"] {
         background-color: #1a1a1a !important;
         color: #e0e0e0 !important;
         border: 1px solid #444 !important;
@@ -64,7 +64,7 @@ if "stage" not in st.session_state:
 if "player_name" not in st.session_state:
     st.session_state.player_name = "신입"
 
-# --- [NEW] 외형 관련 세션 변수 추가 ---
+# 외형 관련 세션 변수
 if "hair_color" not in st.session_state:
     st.session_state.hair_color = "흑발"
 if "hair_length" not in st.session_state:
@@ -86,9 +86,8 @@ if "inventory" not in st.session_state:
 
 # 3. 사이드바 - 캐릭터 프로필 / 호감도 / 스탯 / 인벤토리 영역
 with st.sidebar:
-    st.markdown("### 👤 PLAYER STATUS")
+    st.markdown("### PLAYER STATUS")
     st.markdown(f"**이름:** {st.session_state.player_name}")
-    # --- [NEW] 외형 정보 사이드바 표시 ---
     st.markdown(f"**외형:** {st.session_state.hair_color} / {st.session_state.hair_length} / {st.session_state.eye_color}")
     st.write("---")
     
@@ -120,8 +119,8 @@ with st.sidebar:
     st.markdown(gauge_html, unsafe_allow_html=True)
     st.write("---")
     
-    # 5대 스탯창 구현 함수
-    st.markdown("#### 📊 보유 스탯")
+    # 5대 스탯창 구현 (이모티콘 제거 버전)
+    st.markdown("#### 보유 스탯")
     
     def render_stat_bar(stat_name, value, color):
         val = max(0, min(100, value))
@@ -136,20 +135,20 @@ with st.sidebar:
         """
         st.markdown(stat_html, unsafe_allow_html=True)
 
-    render_stat_bar("외모 💜", st.session_state.stats["외모"], "#da70d6")
-    render_stat_bar("정신력 🩵", st.session_state.stats["정신력"], "#00bfff")
-    render_stat_bar("체력 💚", st.session_state.stats["체력"], "#32cd32")
-    render_stat_bar("입담 💛", st.session_state.stats["입담"], "#ffd700")
-    render_stat_bar("전투 ❤️", st.session_state.stats["전투"], "#ff4500")
+    render_stat_bar("외모", st.session_state.stats["외모"], "#da70d6")
+    render_stat_bar("정신력", st.session_state.stats["정신력"], "#00bfff")
+    render_stat_bar("체력", st.session_state.stats["체력"], "#32cd32")
+    render_stat_bar("입담", st.session_state.stats["입담"], "#ffd700")
+    render_stat_bar("전투", st.session_state.stats["전투"], "#ff4500")
     
     st.write("---")
     
-    # 인벤토리 창 구현
-    st.markdown("#### 🎒 인벤토리")
+    # 인벤토리 창 (이모티콘 제거 버전)
+    st.markdown("#### 인벤토리")
     if st.session_state.inventory:
         inv_html = '<div style="display: flex; flex-wrap: wrap; gap: 5px;">'
         for item in st.session_state.inventory:
-            inv_html += f'<span style="background-color: #222; color: #aaa; border: 1px solid #444; padding: 3px 8px; border-radius: 12px; font-size: 12px;">📦 {item}</span>'
+            inv_html += f'<span style="background-color: #222; color: #aaa; border: 1px solid #444; padding: 3px 8px; border-radius: 12px; font-size: 12px;">{item}</span>'
         inv_html += '</div>'
         st.markdown(inv_html, unsafe_allow_html=True)
     else:
@@ -179,30 +178,39 @@ if st.session_state.stage == 0:
     st.markdown("<h1 style='text-align: center; color: #FF69B4 !important; text-shadow: 0 0 15px rgba(255,105,180,0.5); font-size: 36px;'>문호 스트레이독스 기반 자캐 연애 시뮬레이션</h1>", unsafe_allow_html=True)
     st.write("---")
     
-    st.write("포트 마피아에 입사하신 것을 환영합니다. 밤의 안개를 헤쳐 나가기 전, 당신의 신상명세와 외견을 먼저 작성해 주세요.")
+    st.write("포트 마피아에 입사하신 것을 환영합니다. 밤의 안개를 헤쳐 나가기 전, 당신의 신상명세와 외견을 먼저 선택해 주세요.")
     st.write("")
     
-    # 캐릭터 커스텀 텍스트 입력 UI
+    # 캐릭터 커스텀 UI (입력창 및 클릭 선택창 혼합)
     input_name = st.text_input("당신의 이름을 입력해 주세요", value="신입", max_chars=10)
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        input_hair_color = st.text_input("머리 색 (예: 백발, 흑발)", value="흑발", max_chars=10)
+        select_hair_color = st.selectbox(
+            "머리 색", 
+            ["흑발", "백발", "금발", "갈발", "은발", "적발", "청발"]
+        )
     with col2:
-        input_hair_length = st.text_input("머리 길이 (예: 장발, 단발)", value="단발", max_chars=10)
+        select_hair_length = st.selectbox(
+            "머리 길이", 
+            ["단발", "숏컷", "중단발", "장발", "세미롱"]
+        )
     with col3:
-        input_eye_color = st.text_input("눈 색 (예: 적안, 벽안)", value="흑안", max_chars=10)
+        select_eye_color = st.selectbox(
+            "눈 색", 
+            ["흑안", "적안", "벽안", "자안", "녹안", "금안", "역안"]
+        )
     
     st.write("")
     st.write("---")
     
     # 시작 버튼 연출
     if st.button("▶ 스토리 시작하기"):
-        # 입력된 커스텀 데이터들을 세션 상태에 저장
+        # 입력 및 선택된 커스텀 데이터들을 세션 상태에 저장
         st.session_state.player_name = input_name
-        st.session_state.hair_color = input_hair_color
-        st.session_state.hair_length = input_hair_length
-        st.session_state.eye_color = input_eye_color
+        st.session_state.hair_color = select_hair_color
+        st.session_state.hair_length = select_hair_length
+        st.session_state.eye_color = select_eye_color
         
         # 기본 초기값 세팅 및 시작
         st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
