@@ -178,7 +178,7 @@ if st.session_state.stage == 0:
     st.markdown("<h1 style='text-align: center; color: #FF69B4 !important; text-shadow: 0 0 15px rgba(255,105,180,0.5); font-size: 36px;'>문호 스트레이독스 기반 자캐 연애 시뮬레이션</h1>", unsafe_allow_html=True)
     st.write("---")
     
-    st.write("포트 마피아에 입사하신 것을 환영합니다. 밤의 안개를 헤쳐 나가기 전, 당신의 신상명세와 외견을 먼저 선택해 주세요.")
+    st.write("포트 마피아에 입사하신 것을 환영합니다! 본 웹사이트는 포트마피아의 드림주, 기시 유스케와 연관된 미연시 게임입니다. 잘 부탁드립니다!")
     st.write("")
     
     # 캐릭터 커스텀 UI (입력창 및 클릭 선택창 혼합)
