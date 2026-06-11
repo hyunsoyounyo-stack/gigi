@@ -53,7 +53,6 @@ st.markdown("""
 
 # 강조용 텍스트 스타일 정의
 pink_style = '<span style="color: #FF69B4; font-weight: bold; font-size: 28px; text-shadow: 0 0 10px #FF69B4;">♥ {}</span>'
-pink_sub_text = '<span style="color: #FFBBCC; font-style: italic;">{}</span>'
 
 # 2. 세션 상태(Session State) 변수 초기화
 if "stage" not in st.session_state:
@@ -84,11 +83,11 @@ st.title("문호 스트레이독스: 포트 마피아 내부")
 st.write("---")
 
 # ==========================================================
-# STAGE 1: 오프닝 서술 (대폭 확장 버전)
+# STAGE 1: 오프닝 서술
 # ==========================================================
 if st.session_state.stage == 1:
     st.write("당신은 요코하마의 밤을 지배하는 잔혹한 조직, 포트 마피아의 말단 신입입니다.")
-    st.write("조직에 들어온 지 얼마 되지 않아 업무 서툴고 기가 약하다는 이유로, 당신은 악질적인 선배들의 표적이 되었습니다. 그들은 킥킥거리며 아무도 가기 꺼려하는 본부 건물의 가장 깊숙한 지하 통로로 당신을 떠밀었습니다. 제대로 된 손전등 하나 쥐어주지 않은 채로 말입니다.")
+    st.write("조직에 들어온 지 얼마 되지 않아 업무가 서툴고 기가 약하다는 이유로, 당신은 악질적인 선배들의 표적이 되었습니다. 그들은 킥킥거리며 아무도 가기 꺼려하는 본부 건물의 가장 깊숙한 지하 통로로 당신을 떠밀었습니다. 제대로 된 손전등 하나 쥐어주지 않은 채로 말입니다.")
     st.write("포트 마피아의 지하는 소문대로 차갑고 스산한 공기로 가득 차 있습니다. 웅웅거리는 낡은 환풍기 소리만이 불길하게 울려 퍼지고, 사방의 콘크리트 벽에서는 원인 모를 습기와 곰팡이 냄새, 그리고 어딘지 모르게 비릿한 피비린내가 배어 나오는 것만 같습니다.")
     st.write("발을 내딛을 때마다 구두 굽 소리가 기괴하게 메아리치고, 발목을 타고 올라오는 오한에 당신은 저절로 옷깃을 여미며 몸을 웅크립니다. 뒤를 돌아보아도 이미 빛은 사라진 지 오래, 칠흑 같은 어둠만이 삼킬 듯이 도사리고 있습니다.")
     st.write("심장이 터질 것처럼 쿵쾅거리던 바로 그때, 저 멀리 짙은 어둠 속에서 무언가가 이쪽을 향해 소리도 없이, 급작스럽고 빠르게 다가오기 시작합니다!")
@@ -107,7 +106,7 @@ elif st.session_state.stage == 2:
     st.write("")
     
     if st.button("> 겁에 질려 팔을 휘적인다."):
-        st.session_state.love_point -= 10
+        st.session_state.love_point -= 10  # 👈 내부적으로만 호감도 감소 계산
         st.session_state.selected_choice_1 = 1
         st.session_state.stage = 3
         st.rerun()
@@ -123,24 +122,21 @@ elif st.session_state.stage == 2:
         st.rerun()
 
 # ==========================================================
-# STAGE 3: 선택지에 따른 유스케의 반응
+# STAGE 3: 선택지에 따른 유스케의 반응 (알림 텍스트 제거)
 # ==========================================================
 elif st.session_state.stage == 3:
     if st.session_state.selected_choice_1 == 1:
         st.write("당신이 겁에 질려 비명을 지르며 마구 팔을 휘두르자, 하얀 천을 쓴 형체가 예상치 못한 격렬한 저항에 멈칫하더니 뒤로 한 발자국 물러납니다.")
-        st.markdown(pink_sub_text.format("(기시 유스케의 호감도가 -10 되었습니다.)"), unsafe_allow_html=True)
         st.write("")
         st.write('"(여기에 1번 대사를 입력하세요)"')
         
     elif st.session_state.selected_choice_1 == 2:
         st.write("공포에 질려 손가락 하나 움직이지 못하고 몸이 완전히 굳어버린 당신. 천을 쓴 수수께끼의 형체는 그런 당신의 앞에 우뚝 서서 가만히 시선을 던집니다.")
-        st.markdown(pink_sub_text.format("(호감도 변동 없음)"), unsafe_allow_html=True)
         st.write("")
         st.write('"(여기에 2번 대사를 입력하세요)"')
         
     elif st.session_state.selected_choice_1 == 3:
         st.write("공포를 이겨내고, 스산한 마피아 지하 통로에 어울리지 않는 태연하고 쾌활한 인사를 건넵니다. 그러자 백색의 형체가 어이없다는 듯 그 자리에 뚝 멈춰 섭니다.")
-        st.markdown(pink_sub_text.format("(호감도 변동 없음)"), unsafe_allow_html=True)
         st.write("")
         st.write('"(여기에 3번 대사를 입력하세요)"')
 
@@ -159,7 +155,7 @@ elif st.session_state.stage == 4:
     st.write("")
     
     if st.button("> (선택지 4)"):
-        st.session_state.love_point += 10
+        st.session_state.love_point += 10  # 👈 호감도 수치 수정하기 편하게 유지
         st.session_state.stage = 5
         st.rerun()
         
