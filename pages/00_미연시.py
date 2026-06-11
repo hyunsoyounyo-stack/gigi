@@ -54,7 +54,6 @@ st.markdown("""
 # 강조용 텍스트 스타일 정의
 pink_style = '<span style="color: #FF69B4; font-weight: bold; font-size: 28px; text-shadow: 0 0 10px #FF69B4;">♥ {}</span>'
 pink_sub_text = '<span style="color: #FFBBCC; font-style: italic;">{}</span>'
-speaker_style = '<span style="color: #FFBBCC; font-weight: bold;">기시 유스케</span>' # 이름 강조용
 
 # 2. 세션 상태(Session State) 변수 초기화
 if "stage" not in st.session_state:
@@ -89,7 +88,7 @@ st.write("---")
 # ==========================================================
 if st.session_state.stage == 1:
     st.write("당신은 포트 마피아의 신입입니다.")
-    st.write("불쌍하게도 선배들의 텃세에 의해 가장 오기 싫었던 지하로 오게 된 당신, 마피아의 지하는 어둡고 스산하기만 합니다...... 서린 냉기가 바지 밑단을 스치는 기분에, 당신은 저절로 몸을 움치를니다.")
+    st.write("불쌍하게도 선배들의 텃세에 의해 가장 오기 싫었던 지하로 오게 된 당신, 마피아의 지하는 어둡고 스산하기만 합니다...... 서린 냉기가 바지 밑단을 스치는 기분에, 당신은 저절로 몸을 움츠립니다.")
     st.write("그때, 갑작스레 당신의 앞으로 무언가가 빠르게 다가옵니다!")
     
     st.write("")
@@ -121,29 +120,29 @@ elif st.session_state.stage == 2:
         st.rerun()
 
 # ==========================================================
-# STAGE 3: 선택지에 따른 유스케의 반응 (일반 텍스트 대사창)
+# STAGE 3: 선택지에 따른 유스케의 반응 (이름표 제거 버전)
 # ==========================================================
 elif st.session_state.stage == 3:
     if st.session_state.selected_choice_1 == 1:
         st.write("당신이 겁에 질려 팔을 휘두르자, 천을 쓴 형체가 뒤로 한 발자국 물러납니다.")
         st.markdown(pink_sub_text.format("(기시 유스케의 호감도가 -10 되었습니다.)"), unsafe_allow_html=True)
         st.write("")
-        # 박스를 없애고 줄글 형태로 연출
-        st.markdown(f'{speaker_style}: "(여기에 1번 대사를 입력하세요)"', unsafe_allow_html=True)
+        # 이름표를 지우고 순수 대사 텍스트만 출력합니다.
+        st.write('"(여기에 1번 대사를 입력하세요)"')
         
     elif st.session_state.selected_choice_1 == 2:
         st.write("몸이 굳어버린 당신을 향해, 천을 쓴 형체가 가만히 시선을 던집니다.")
         st.markdown(pink_sub_text.format("(호감도 변동 없음)"), unsafe_allow_html=True)
         st.write("")
-        st.markdown(f'{speaker_style}: "(여기에 2번 대사를 입력하세요)"', unsafe_allow_html=True)
+        st.write('"(여기에 2번 대사를 입력하세요)"')
         
     elif st.session_state.selected_choice_1 == 3:
         st.write("스산한 지하 마피아 본부에서 쾌활하게 인사를 던지자, 상대방이 어이없다는 듯 멈칫합니다.")
         st.markdown(pink_sub_text.format("(호감도 변동 없음)"), unsafe_allow_html=True)
         st.write("")
-        st.markdown(f'{speaker_style}: "(여기에 3번 대사를 입력하세요)"', unsafe_allow_html=True)
+        st.write('"(여기에 3번 대사를 입력하세요)"')
 
-    st.write("")
+    st.write("---")
     if st.button("> 상황 계속 진행하기"):
         st.session_state.stage = 4
         st.rerun()
@@ -154,7 +153,7 @@ elif st.session_state.stage == 3:
 elif st.session_state.stage == 4:
     st.write("(다음 포트 마피아 내부 상황 묘사를 이곳에 적어주세요.)")
     st.write("")
-    st.markdown(f'{speaker_style}: "(대사)"', unsafe_allow_html=True)
+    st.write('"(대사)"')
     st.write("")
     
     if st.button("> (선택지 4)"):
@@ -173,7 +172,7 @@ elif st.session_state.stage == 4:
 elif st.session_state.stage == 5:
     st.write("(그 이후의 상황 묘사를 이곳에 적어주세요.)")
     st.write("")
-    st.markdown(f'{speaker_style}: "(대사)"', unsafe_allow_html=True)
+    st.write('"(대사)"')
     st.write("")
     
     if st.button("> 다음 상황으로"):
