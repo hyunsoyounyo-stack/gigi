@@ -73,13 +73,11 @@ with st.sidebar:
     
     # HTML/CSS 기반 양방향 게이지 바 생성
     if lp >= 0:
-        # 플러스일 때: 중간(50%)에서 오른쪽으로 분홍색(#FF69B4) 확장
         left_space = 50
         bar_width = (lp / 100) * 50
         bar_color = "#FF69B4"
         shadow_color = "#FF69B4"
     else:
-        # 마이너스일 때: 중간(50%)에서 왼쪽으로 파란색(#4a90e2) 확장
         bar_width = (abs(lp) / 100) * 50
         left_space = 50 - bar_width
         bar_color = "#4a90e2"
@@ -141,4 +139,57 @@ elif st.session_state.stage == 2:
         st.session_state.stage = 3
         st.rerun()
         
-    if st.button
+    if st.button('> "안녕?" 태연하게 인사한다.'):
+        st.session_state.selected_choice_1 = 3
+        st.session_state.stage = 3
+        st.rerun()
+
+# ==========================================================
+# STAGE 3: 선택지에 따른 유스케의 반응
+# ==========================================================
+elif st.session_state.stage == 3:
+    if st.session_state.selected_choice_1 == 1:
+        st.write("당신이 겁에 질려 비명을 지르며 마구 팔을 휘두르자, 하얀 천을 쓴 형체가 예상치 못한 움직임에 멈칫하더니 뒤로 한 발자국 물러납니다. 천 너머에서 작은 한숨소리가 들려오는 것만 같습니다. 사람?")
+        st.write("")
+        st.write('"하아...... 신입? 멋대로 움직이지마, 진짜 귀신이라도 나올지 모르잖아?"')
+        st.write("")
+        st.write("상대를 귀신으로 착각한 속내를 들킨 것만 같아 심장이 콩닥콩닥해졌습니다.")
+        
+    elif st.session_state.selected_choice_1 == 2:
+        st.write("공포에 질려 손가락 하나 움직이지 못하고 몸이 완전히 굳어버린 당신. 천을 쓴 수수께끼의 형체는 그런 당신의 앞에 우뚝 서서 가만히 시선을 던집니다.")
+        st.write("")
+        st.write('"(여기에 2번 대사를 입력하세요)"')
+        
+    elif st.session_state.selected_choice_1 == 3:
+        st.write("공포를 이겨내고, 스산한 마피아 지하 통로에 어울리지 않는 태연하고 쾌활한 인사를 건넵니다. 그러자 백색의 형체가 어이없다는 듯 그 자리에 뚝 멈춰 섭니다.")
+        st.write("")
+        st.write('"(여기에 3번 대사를 입력하세요)"')
+
+    st.write("---")
+    # 🛠️ 이 부분 끝에 콜론(:)을 넣어 정상적으로 수정했습니다.
+    if st.button("> 상황 계속 진행하기"):
+        st.session_state.stage = 4
+        st.rerun()
+
+# ==========================================================
+# STAGE 4: 두 번째 상황 (사용자 직접 작성용)
+# ==========================================================
+elif st.session_state.stage == 4:
+    st.write("(다음 포트 마피아 내부 상황 묘사를 이곳에 적어주세요.)")
+    st.write("")
+    st.write('"(대사)"')
+    st.write("")
+    
+    if st.button("> (선택지 4)"):
+        st.session_state.love_point += 10
+        st.session_state.stage = 5
+        st.rerun()
+        
+    if st.button("> (선택지 5)"):
+        st.session_state.love_point += 5
+        st.session_state.stage = 5
+        st.rerun()
+
+# ==========================================================
+# STAGE 5: 세 번째 상황
+# =
