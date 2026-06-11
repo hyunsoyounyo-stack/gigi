@@ -217,7 +217,7 @@ if st.session_state.stage == 0:
         st.rerun()
 
 # ==========================================================
-# STAGE 1: 오프닝 서술 (★하단 이스터에그 감정 연출 분리★)
+# STAGE 1: 오프닝 서술
 # ==========================================================
 elif st.session_state.stage == 1:
     st.markdown("### 포트 마피아 내부")
@@ -248,7 +248,6 @@ elif st.session_state.stage == 1:
         st.session_state.eye_color == "적안"
     )
     
-    # 감정선 묘사 다변화 구현
     if is_easter_egg:
         st.write("바로 그때, 저 멀리 짙은 어둠 속에서 무언가가 이쪽을 향해 소리도 없이, 급작스럽고 빠르게 다가오기 시작합니다!")
     else:
@@ -260,7 +259,7 @@ elif st.session_state.stage == 1:
         st.rerun()
 
 # ==========================================================
-# STAGE 2: 이어지는 연출 (백발+장발+적안 이스터에그 본문)
+# STAGE 2: 이어지는 연출 (★선택지 가변 로직 반영★)
 # ==========================================================
 elif st.session_state.stage == 2:
     st.markdown("### 포트 마피아 내부")
@@ -302,24 +301,34 @@ elif st.session_state.stage == 2:
         st.session_state.stage = 3
         st.rerun()
         
-    if st.button('> "안녕하세요." 태연하게 말 건넨다.'):
+    # 조건에 따른 3번 선택지 이름 가변 출력
+    choice_3_text = '> "안녕하세요." 태연하게 말 건넨다.' if is_easter_egg else '> "누구세요?" 태연하게 질문 뱉는다.'
+    
+    if st.button(choice_3_text):
         st.session_state.stats["입담"] += 5
         st.session_state.selected_choice_1 = 3
         st.session_state.stage = 3
         st.rerun()
 
 # ==========================================================
-# STAGE 3: 선택지에 따른 유스케의 반응
+# STAGE 3: 선택지에 따른 유스케의 반응 (★대사 흐름 수정★)
 # ==========================================================
 elif st.session_state.stage == 3:
     st.markdown("### 포트 마피아 내부")
     st.write("---")
+    
+    is_easter_egg = (
+        st.session_state.hair_color == "백발" and 
+        st.session_state.hair_length == "장발" and 
+        st.session_state.eye_color == "적안"
+    )
+    
     if st.session_state.selected_choice_1 == 1:
         st.write("당신이 겁에 질려 팔을 마구 휘두르자, 하얀 천을 쓴 형체가 예상치 못한 움직임에 멈칫하더니 뒤로 한 발자국 물러납니다. 천 너머에서 작은 한숨소리가 들려오는 것만 같습니다. 사람?")
         st.write("")
         st.write('"하아...... 신입? 멋대로 움직이지마, 진짜 귀신이라도 나올지 모르잖아?"')
         st.write("")
-        st.write("성별을 알 수 없는 목소리가 천 너머로 새어나옵니다. 상대를 귀신으로 착각한 속내를 들킨 것만 같아 당신의 심장이 심장이 콩닥콩닥해졌습니다.")
+        st.write("성별을 알 수 없는 목소리가 천 너머로 새어나옵니다. 상대를 귀신으로 착각한 속내를 들킨 것만 같아 당신의 심장이 콩닥콩닥해졌습니다.")
         st.session_state.stats["정신력"] -= 5
         
     elif st.session_state.selected_choice_1 == 2:
@@ -332,14 +341,25 @@ elif st.session_state.stage == 3:
         st.write("성별을 알 수 없는 목소리가 천 너머로 새어나옵니다. 목소리에는 즐거움이 잔뜩 묻어있는 것 같습니다. 이 사람은 사람을 놀래키는 게 재미있는 걸까요?")
         
     elif st.session_state.selected_choice_1 == 3:
-        st.write("딱히 놀라지도 않았습니다. 아니, 그저 별 생각이 없었다는 것에 가까웠던 것 같습니다. 사람을 보면 인사를 해야하기 때문에, 어색한 상황에서 먼저 입을 열어 말을 건네었습니다")
+        if is_easter_egg:
+            # 이스터에그 상황일 때 ("안녕하세요.")
+            st.write("딱히 놀라지도 않았습니다. 아니, 그저 별 생각이 없었다는 것에 가까웠던 것 같습니다. 부딪치자마자 뚫어져라 상대의 천을 응시하더니, 어색한 상황 속에서 먼저 입을 열어 인사를 건넸습니다.")
+            st.write("")
+            st.write('"안녕하세요."')
+            st.write("허? 어이없다는 듯한 작은 숨소리가 천 너머로 새어나옵니다.")
+            st.write("")
+            st.write('"......넌 무슨, 놀라지도 않아?"')
+        else:
+            # 일반 상황일 때 ("누구세요?")
+            st.write("어둡고 기괴한 공간이지만 크게 위축되지 않은 채, 당신은 허공의 백색 형체를 똑바로 바라보며 차분하게 목소리를 냈습니다.")
+            st.write("")
+            st.write('"누구세요?"')
+            st.write("질문을 뱉자마자 예상 밖이라는 듯 천 너머에서 어이없는 작은 숨소리가 훅 새어나옵니다.")
+            st.write("")
+            st.write('"......하, 신입 주제에 제법 당돌하네? 보통은 소리부터 지르던데."')
+            
         st.write("")
-        st.write('"안녕하세요."')
-        st.write("허? 어이없다는 듯한 작은 숨소리가 천 너머로 새어나옵니다.")
-        st.write("")
-        st.write('"......넌 무슨, 놀라지도 않아?"')
-        st.write("")
-        st.write("성별을 알 수 없는 목소리가 천 너머로 새어나왔습니다. 그런데, 그게 중요한가요?")
+        st.write("성별을 알 수 없는 목소리가 천 너머로 흘러나왔습니다. 장난기가 서린 듯하면서도, 묘한 흥미가 느껴지는 어조입니다.")
 
     st.write("---")
     if st.button("> 상황 계속 진행하기"):
