@@ -44,6 +44,13 @@ st.markdown("""
         box-shadow: none !important;
     }
     
+    /* 입력창 배경 다크톤 조절 */
+    div[data-testid="stTextInput"] input, div[data-testid="stSelectbox"] select {
+        background-color: #1a1a1a !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #444 !important;
+    }
+    
     /* 구분선 색상 변경 */
     hr {
         border-color: #333333 !important;
@@ -53,21 +60,17 @@ st.markdown("""
 
 # 2. 세션 상태(Session State) 변수 초기화
 if "stage" not in st.session_state:
-    st.session_state.stage = 1
+    st.session_state.stage = 0  # 👈 0번 스테이지를 '캐릭터 설정 화면'으로 정의합니다.
+if "player_name" not in st.session_state:
+    st.session_state.player_name = "신입"
 if "love_point" not in st.session_state:
     st.session_state.love_point = 0
 if "selected_choice_1" not in st.session_state:
     st.session_state.selected_choice_1 = None
 
-# --- [NEW] RPG 시스템 변수 초기화 ---
+# RPG 시스템 변수 초기화
 if "stats" not in st.session_state:
-    st.session_state.stats = {
-        "외모": 50,
-        "정신력": 50,
-        "체력": 50,
-        "입담": 50,
-        "전투": 50
-    }
+    st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
 if "inventory" not in st.session_state:
     st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
 
@@ -75,6 +78,7 @@ if "inventory" not in st.session_state:
 # 3. 사이드바 - 캐릭터 프로필 / 호감도 / 스탯 / 인벤토리 영역
 with st.sidebar:
     st.markdown("### 👤 PLAYER STATUS")
+    st.write(f"**이름:** {st.session_state.player_name}")
     st.write("---")
     
     # 공략 대상 및 호감도 막대바
@@ -105,7 +109,7 @@ with st.sidebar:
     st.markdown(gauge_html, unsafe_allow_html=True)
     st.write("---")
     
-    # [NEW] 5대 스탯창 구현 함수
+    # 5대 스탯창 구현 함수
     st.markdown("#### 📊 보유 스탯")
     
     def render_stat_bar(stat_name, value, color):
@@ -129,10 +133,9 @@ with st.sidebar:
     
     st.write("---")
     
-    # [NEW] 인벤토리 창 구현
+    # 인벤토리 창 구현
     st.markdown("#### 🎒 인벤토리")
     if st.session_state.inventory:
-        # 아이템들을 둥근 배지 형태로 나열
         inv_html = '<div style="display: flex; flex-wrap: wrap; gap: 5px;">'
         for item in st.session_state.inventory:
             inv_html += f'<span style="background-color: #222; color: #aaa; border: 1px solid #444; padding: 3px 8px; border-radius: 12px; font-size: 12px;">📦 {item}</span>'
@@ -145,7 +148,8 @@ with st.sidebar:
     
     # 리셋 버튼
     if st.button("처음부터 다시 시작"):
-        st.session_state.stage = 1
+        st.session_state.stage = 0
+        st.session_state.player_name = "신입"
         st.session_state.love_point = 0
         st.session_state.selected_choice_1 = None
         st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
@@ -153,15 +157,58 @@ with st.sidebar:
         st.rerun()
 
 
-# 4. 메인 스토리 영역
-st.title("문호 스트레이독스: 포트 마피아 내부")
-st.write("---")
+# 4. 메인 디자인 및 스테이지 제어 영역
+# ==========================================================
+# STAGE 0: 시작 전 캐릭터 설정창 (NEW)
+# ==========================================================
+if st.session_state.stage == 0:
+    st.markdown("<h1 style='text-align: center; color: #FF69B4 !important; text-shadow: 0 0 15px rgba(255,105,180,0.5); font-size: 36px;'>문호 스트레이독스 기반 자캐 연애 시뮬레이션</h1>", unsafe_allow_html=True)
+    st.write("---")
+    
+    st.write("포트 마피아에 입사하신 것을 환영합니다. 밤의 안개를 헤쳐 나가기 전, 당신의 신상명세를 먼저 작성해 주세요.")
+    st.write("")
+    
+    # 캐릭터 커스텀 폼
+    input_name = st.text_input("당신의 이름을 입력해 주세요", value="신입", max_chars=10)
+    
+    stat_preset = st.selectbox(
+        "당신의 초기 성향(재능)을 선택해 주세요",
+        ["평범한 생존자", "천생 마피아", "화술의 달인", "요코하마 절세가인"]
+    )
+    
+    st.write("")
+    st.write("---")
+    
+    # 시작 버튼 연출
+    if st.button("▶ 스토리 시작하기"):
+        # 플레이어 이름 저장
+        st.session_state.player_name = input_name
+        
+        # 선택 프레셋별 스탯 및 인벤토리 가중치 부여
+        if stat_preset == "천생 마피아":
+            st.session_state.stats = {"외모": 40, "정신력": 50, "체력": 75, "입담": 40, "전투": 80}
+            st.session_state.inventory = ["조직원 배지", "동전 몇 개", "지급용 무디 단검"]
+        elif stat_preset == "화술의 달인":
+            st.session_state.stats = {"외모": 55, "정신력": 70, "체력": 45, "입담": 80, "전투": 35}
+            st.session_state.inventory = ["조직원 배지", "동전 몇 개", "눈속임용 사탕 한 봉지"]
+        elif stat_preset == "요코하마 절세가인":
+            st.session_state.stats = {"외모": 85, "정신력": 60, "체력": 45, "입담": 60, "전투": 35}
+            st.session_state.inventory = ["조직원 배지", "동전 몇 개", "고급 손수건"]
+        else: # 평범한 생존자
+            st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
+            st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
+            
+        # 첫 번째 스토리 페이지로 이동
+        st.session_state.stage = 1
+        st.rerun()
 
 # ==========================================================
 # STAGE 1: 오프닝 서술
 # ==========================================================
-if st.session_state.stage == 1:
-    st.write("당신은 요코하마의 밤을 지배하는 잔혹한 조직, 포트 마피아의 말단 신입입니다.")
+elif st.session_state.stage == 1:
+    st.markdown("### 포트 마피아 내부")
+    st.write("---")
+    st.write(f"당신({st.session_state.player_name})은 요코하마의 밤을 지배하는 잔혹한 조직, 포트 마피아의 말단 신입입니다.")
     st.write("조직에 들어온 지 얼마 되지 않아 업무가 서툴고 기가 약하다는 이유로, 당신은 악질적인 선배들의 표적이 되었습니다. 그들은 킥킥거리며 아무도 가기 꺼려하는 본부 건물의 가장 깊숙한 지하 통로로 당신을 떠밀었습니다. 제대로 된 손전등 하나 쥐어주지 않은 채로 말입니다.")
     st.write("포트 마피아의 지하는 소문대로 차갑고 스산한 공기로 가득 차 있습니다. 웅웅거리는 낡은 환풍기 소리만이 불길하게 울려 퍼지고, 사방의 콘크리트 벽에서는 원인 모를 습기와 곰팡이 냄새, 그리고 어딘지 모르게 비릿한 피비린내가 배어 나오는 것만 같습니다.")
     st.write("발을 내딛을 때마다 구두 굽 소리가 기괴하게 메아리치고, 발목을 타고 올라오는 오한에 당신은 저절로 옷깃을 여미며 몸을 웅크립니다. 뒤를 돌아보아도 이미 빛은 사라진 지 오래, 칠흑 같은 어둠만이 삼킬 듯이 도사리고 있습니다.")
@@ -176,32 +223,28 @@ if st.session_state.stage == 1:
 # STAGE 2: 이어지는 연출 (귀신 조우)
 # ==========================================================
 elif st.session_state.stage == 2:
+    st.markdown("### 포트 마피아 내부")
+    st.write("---")
     st.write("숨이 턱 막히는 공포 속에서 흐릿한 시야를 간신히 넓혀봅니다. 눈앞까지 다가온 것은 다름 아닌 허공을 일렁이는 거대한 하얀 천이었습니다.")
     st.write("귀신? 아니면 악명 높은 포트 마피아의 잔혹한 이능력자일까요? 이 어두운 지하에서 마주친 이질적인 존재에 온몸의 털이 곤두섭니다.")
     st.write("")
     
     if st.button("> 겁에 질려 팔을 휘적인다."):
         st.session_state.love_point -= 10
-        # 예시: 팔을 마구 휘둘렀으니 전투 스탯이 2 오르고, 정신력이 5 깎임
         st.session_state.stats["전투"] += 2
         st.session_state.stats["정신력"] -= 5
-        
         st.session_state.selected_choice_1 = 1
         st.session_state.stage = 3
         st.rerun()
         
     if st.button("> 깜짝 놀라 몸을 굳힌다."):
-        # 예시: 굳어버렸으니 정신력이 2 깎임
         st.session_state.stats["정신력"] -= 2
-        
         st.session_state.selected_choice_1 = 2
         st.session_state.stage = 3
         st.rerun()
         
     if st.button('> "안녕?" 태연하게 인사한다.'):
-        # 예시: 이런 상황에서 인사를 건네다니! 입담이 5 오름
         st.session_state.stats["입담"] += 5
-        
         st.session_state.selected_choice_1 = 3
         st.session_state.stage = 3
         st.rerun()
@@ -210,6 +253,8 @@ elif st.session_state.stage == 2:
 # STAGE 3: 선택지에 따른 유스케의 반응
 # ==========================================================
 elif st.session_state.stage == 3:
+    st.markdown("### 포트 마피아 내부")
+    st.write("---")
     if st.session_state.selected_choice_1 == 1:
         st.write("당신이 겁에 질려 비명을 지르며 마구 팔을 휘두르자, 하얀 천을 쓴 형체가 예상치 못한 움직임에 멈칫하더니 뒤로 한 발자국 물러납니다. 천 너머에서 작은 한숨소리가 들려오는 것만 같습니다. 사람?")
         st.write("")
@@ -236,6 +281,8 @@ elif st.session_state.stage == 3:
 # STAGE 4: 두 번째 상황 (사용자 직접 작성용)
 # ==========================================================
 elif st.session_state.stage == 4:
+    st.markdown("### 포트 마피아 내부")
+    st.write("---")
     st.write("(다음 포트 마피아 내부 상황 묘사를 이곳에 적어주세요.)")
     st.write("")
     st.write('"(대사)"')
@@ -255,6 +302,8 @@ elif st.session_state.stage == 4:
 # STAGE 5: 세 번째 상황
 # ==========================================================
 elif st.session_state.stage == 5:
+    st.markdown("### 포트 마피아 내부")
+    st.write("---")
     st.write("(그 이후의 상황 묘사를 이곳에 적어주세요.)")
     st.write("")
     st.write('"(대사)"')
