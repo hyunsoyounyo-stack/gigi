@@ -24,10 +24,10 @@ st.markdown("""
         border-radius: 5px;
     }
     
-    /* [CRITICAL] 스트림릿 버튼을 DoL 스타일의 기본 파란색 링크로 커스텀 */
+    /* [CRITICAL] 선택지 버튼을 DoL 스타일의 기본 파란색 글씨로 강력 고정 */
     div.stButton > button {
         background-color: transparent !important;
-        color: #4a90e2 !important; /* 👈 기본 상태에서 파란색으로 표시 */
+        color: #4a90e2 !important; /* 👈 기본 상태 파란색 글씨 강제 */
         border: none !important;
         padding: 4px 0px !important;
         font-size: 16px !important;
@@ -44,10 +44,10 @@ st.markdown("""
         text-decoration: underline !important;
     }
     
-    /* 버튼 클릭 시 또는 포커스 시 잔상 및 색상 고정 */
+    /* 버튼 클릭 시 또는 포커스 시 잔상 방지 및 색상 유지 */
     div.stButton > button:active, div.stButton > button:focus {
         background-color: transparent !important;
-        color: #70a1ff !important;
+        color: #4a90e2 !important;
         box-shadow: none !important;
     }
     
@@ -70,14 +70,13 @@ if "love_point" not in st.session_state:
 if "selected_choice_1" not in st.session_state:
     st.session_state.selected_choice_1 = None
 
-# 3. 사이드바 - 기시 유스케의 호감도 표시 영역
+# 3. 사이드바 - 기시 유스케의 호감도 표시 영역 (분홍색 고정)
 with st.sidebar:
     st.markdown("### PORT MAFIA")
     st.write("---")
     st.markdown("#### 공략 대상")
     st.subheader("기시 유스케")
     
-    # 분홍색 하트 호감도
     st.markdown(f"**호감도:** {pink_style.format(st.session_state.love_point)}", unsafe_allow_html=True)
     st.write("---")
     
@@ -104,13 +103,13 @@ if st.session_state.stage == 1:
         st.rerun()
 
 # ==========================================================
-# STAGE 2: 첫 번째 선택지 분기 (파란색 DoL 텍스트 스타일)
+# STAGE 2: 첫 번째 선택지 분기 (파란색 글씨 적용 완료)
 # ==========================================================
 elif st.session_state.stage == 2:
     st.write("당신의 눈앞에 나타난 정체불명의 형체. 일촉즉발의 상황에서 당신은 어떻게 행동하시겠습니까?")
     st.write("")
     
-    # 기본 파란색으로 노출되는 선택지 링크들
+    # 기본 상태에서 파란색 글로 보이며, 세로로 나열됩니다.
     if st.button("> 겁에 질려 팔을 휘적인다."):
         st.session_state.love_point -= 10
         st.session_state.selected_choice_1 = 1
