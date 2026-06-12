@@ -51,10 +51,11 @@ st.markdown("""
         border: 1px solid #444 !important;
     }
     
-    /* 토글(Expander) 스타일 다크톤 매칭 */
+    /* Streamlit Expander(접이식 상태창) 스타일 커스텀 */
     div[data-testid="stExpander"] {
-        background-color: #111111 !important;
+        background-color: #151515 !important;
         border: 1px solid #333 !important;
+        border-radius: 4px !important;
     }
     
     /* 구분선 색상 변경 */
@@ -66,7 +67,7 @@ st.markdown("""
 
 # 2. 세션 상태(Session State) 변수 초기화
 if "stage" not in st.session_state:
-    st.session_state.stage = 0  # 0번 스테이지: 캐릭터 설정 화면
+    st.session_state.stage = 0  
 if "player_name" not in st.session_state:
     st.session_state.player_name = "신입"
 
@@ -83,16 +84,27 @@ if "love_point" not in st.session_state:
 if "selected_choice_1" not in st.session_state:
     st.session_state.selected_choice_1 = None
 
-# RPG 시스템 변수 초기화 (체력, 정신력만 유지)
+# RPG 스탯 및 세부 능력 변수 초기화
 if "stats" not in st.session_state:
     st.session_state.stats = {"정신력": 50, "체력": 50}
+
+# ★ 세부 능력 설정 (초반 0 시작, 최대 30) ★
+if "sub_stats" not in st.session_state:
+    st.session_state.sub_stats = {
+        "외모": 0,
+        "체술": 0,
+        "화술": 0,
+        "잠입": 0,
+        "이능력": 0
+    }
+
 if "inventory" not in st.session_state:
     st.session_state.inventory = ["동전 몇 개"]
 
 
 # 3. 사이드바 - 캐릭터 프로필 / 호감도 / 스탯 / 인벤토리 영역
 with st.sidebar:
-    st.markdown("### CHARACTER INFO")
+    st.markdown("### PLAYER STATUS")
     st.markdown(f"**이름:** {st.session_state.player_name}")
     st.markdown(f"**외형:** {st.session_state.hair_color} / {st.session_state.hair_length} / {st.session_state.eye_color}")
     st.write("---")
@@ -125,26 +137,33 @@ with st.sidebar:
     st.markdown(gauge_html, unsafe_allow_html=True)
     st.write("---")
     
-    # ★ RPG 스타일 접이식 상태창 구현 ★
-    # 플레이어가 누르면 아래로 펼쳐지며 숫자가 보입니다.
-    with st.expander("📊 PLAYER STATUS (클릭하여 열기)"):
-        st.write("")
-        
-        def render_stat_bar(stat_name, value, color):
-            val = max(0, min(100, value))
-            stat_html = f"""
-            <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 2px; color: #ccc;">
-                <span style="font-weight: bold;">{stat_name}</span>
-                <span style="font-weight: bold; color: {color};">{val} / 100</span>
-            </div>
-            <div style="width: 100%; background-color: #1a1a1a; height: 8px; border-radius: 4px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
-                <div style="width: {val}%; height: 100%; background-color: {color};"></div>
-            </div>
-            """
-            st.markdown(stat_html, unsafe_allow_html=True)
+    # 기본 스탯창 렌더링 함수 (정신력/체력용 최대치 100 기본)
+    def render_stat_bar(stat_name, value, color, max_val=100):
+        val = max(0, min(max_val, value))
+        pct = (val / max_val) * 100
+        stat_html = f"""
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px; color: #ccc;">
+            <span>{stat_name}</span>
+            <span style="font-weight: bold; color: {color};">{val} / {max_val}</span>
+        </div>
+        <div style="width: 100%; background-color: #1a1a1a; height: 6px; border-radius: 3px; border: 1px solid #333; margin-bottom: 10px; overflow: hidden;">
+            <div style="width: {pct}%; height: 100%; background-color: {color};"></div>
+        </div>
+        """
+        st.markdown(stat_html, unsafe_allow_html=True)
 
-        render_stat_bar("정신력", st.session_state.stats["정신력"], "#00bfff")
-        render_stat_bar("체력", st.session_state.stats["체력"], "#32cd32")
+    # 기본 스탯 (항상 밖에 노출)
+    st.markdown("#### 기본 상태")
+    render_stat_bar("정신력", st.session_state.stats["정신력"], "#00bfff")
+    render_stat_bar("체력", st.session_state.stats["체력"], "#32cd32")
+    
+    # ★ RPG식 접이식 상태창 (누르면 열림, 능력치 최대치 30 설정) ★
+    with st.expander("▶ 세부 능력 상태창 열기", expanded=False):
+        render_stat_bar("외모", st.session_state.sub_stats["외모"], "#da70d6", max_val=30)
+        render_stat_bar("체술", st.session_state.sub_stats["체술"], "#ff4500", max_val=30)
+        render_stat_bar("화술", st.session_state.sub_stats["화술"], "#ffd700", max_val=30)
+        render_stat_bar("잠입", st.session_state.sub_stats["잠입"], "#9400d3", max_val=30)
+        render_stat_bar("이능력", st.session_state.sub_stats["이능력"], "#00ffff", max_val=30)
     
     st.write("---")
     
@@ -171,6 +190,7 @@ with st.sidebar:
         st.session_state.love_point = 0
         st.session_state.selected_choice_1 = None
         st.session_state.stats = {"정신력": 50, "체력": 50}
+        st.session_state.sub_stats = {"외모": 0, "체술": 0, "화술": 0, "잠입": 0, "이능력": 0}
         st.session_state.inventory = ["동전 몇 개"]
         st.rerun()
 
@@ -217,6 +237,7 @@ if st.session_state.stage == 0:
         st.session_state.eye_color = select_eye_color
         
         st.session_state.stats = {"정신력": 50, "체력": 50}
+        st.session_state.sub_stats = {"외모": 0, "체술": 0, "화술": 0, "잠입": 0, "이능력": 0}
         st.session_state.inventory = ["동전 몇 개"]
         st.session_state.stage = 1
         st.rerun()
@@ -372,9 +393,12 @@ elif st.session_state.stage == 3:
             st.session_state.stage = 13  
         st.rerun()
 
+
 # ==========================================================
-# STAGE 11: 1번 선택지(팔 휘두르기) 분기 전개
+# 분기 스테이지 구역 (사용자 작성용)
 # ==========================================================
+
+# STAGE 11: 1번 선택지(팔 휘두르기) 이후 전개
 elif st.session_state.stage == 11:
     st.markdown("### 포트 마피아 내부 - 허우적댄 이후")
     st.write("---")
@@ -387,9 +411,7 @@ elif st.session_state.stage == 11:
     if st.button("> (1번 분기 선택지 B)"):
         st.write("다음 전개 준비 중...")
 
-# ==========================================================
-# STAGE 12: 2번 선택지(몸을 굳힘) 분기 전개
-# ==========================================================
+# STAGE 12: 2번 선택지(몸을 굳힘) 이후 전개
 elif st.session_state.stage == 12:
     st.markdown("### 포트 마피아 내부 - 얼어붙은 이후")
     st.write("---")
@@ -402,9 +424,7 @@ elif st.session_state.stage == 12:
     if st.button("> (2번 분기 선택지 B)"):
         st.write("다음 전개 준비 중...")
 
-# ==========================================================
-# STAGE 13: 3번 선택지(태연한 대화) 분기 전개
-# ==========================================================
+# STAGE 13: 3번 선택지(태연한 대화) 이후 전개
 elif st.session_state.stage == 13:
     st.markdown("### 포트 마피아 내부 - 태연하게 대꾸한 이후")
     st.write("---")
