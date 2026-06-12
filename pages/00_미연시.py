@@ -88,15 +88,9 @@ if "selected_choice_1" not in st.session_state:
 if "stats" not in st.session_state:
     st.session_state.stats = {"정신력": 50, "체력": 50}
 
-# ★ 세부 능력 설정 (초반 0 시작, 최대 30) ★
+# 임시 세부 능력 설정구역
 if "sub_stats" not in st.session_state:
-    st.session_state.sub_stats = {
-        "외모": 0,
-        "체술": 0,
-        "화술": 0,
-        "잠입": 0,
-        "이능력": 0
-    }
+    st.session_state.sub_stats = {"외모": 0, "체술": 0, "화술": 0, "잠입": 0, "이능력": 0}
 
 if "inventory" not in st.session_state:
     st.session_state.inventory = ["동전 몇 개"]
@@ -137,7 +131,7 @@ with st.sidebar:
     st.markdown(gauge_html, unsafe_allow_html=True)
     st.write("---")
     
-    # 기본 스탯창 렌더링 함수 (정신력/체력용 최대치 100 기본)
+    # 기본 스탯창 렌더링 함수
     def render_stat_bar(stat_name, value, color, max_val=100):
         val = max(0, min(max_val, value))
         pct = (val / max_val) * 100
@@ -152,12 +146,12 @@ with st.sidebar:
         """
         st.markdown(stat_html, unsafe_allow_html=True)
 
-    # 기본 스탯 (항상 밖에 노출)
+    # 기본 상태
     st.markdown("#### 기본 상태")
     render_stat_bar("정신력", st.session_state.stats["정신력"], "#00bfff")
     render_stat_bar("체력", st.session_state.stats["체력"], "#32cd32")
     
-    # ★ RPG식 접이식 상태창 (누르면 열림, 능력치 최대치 30 설정) ★
+    # RPG식 접이식 상태창
     with st.expander("▶ 세부 능력 상태창 열기", expanded=False):
         render_stat_bar("외모", st.session_state.sub_stats["외모"], "#da70d6", max_val=30)
         render_stat_bar("체술", st.session_state.sub_stats["체술"], "#ff4500", max_val=30)
@@ -237,7 +231,14 @@ if st.session_state.stage == 0:
         st.session_state.eye_color = select_eye_color
         
         st.session_state.stats = {"정신력": 50, "체력": 50}
-        st.session_state.sub_stats = {"외모": 0, "체술": 0, "화술": 0, "잠입": 0, "이능력": 0}
+        
+        # 이스터에그 판정 시스템
+        is_ee = (select_hair_color == "백발" and select_hair_length == "장발" and select_eye_color == "적안")
+        if is_ee:
+            st.session_state.sub_stats = {"외모": 10, "체술": 5, "화술": 0, "잠입": 5, "이능력": 0}
+        else:
+            st.session_state.sub_stats = {"외모": 0, "체술": 0, "화술": 0, "잠입": 0, "이능력": 0}
+            
         st.session_state.inventory = ["동전 몇 개"]
         st.session_state.stage = 1
         st.rerun()
@@ -267,7 +268,6 @@ elif st.session_state.stage == 1:
         
     st.write(f"발을 내딛을 때마다 구두 굽 소리가 기괴하게 메아리치고, 발목을 타고 올라오는 오한에 당신은 저절로 옷깃을 여미며 몸을 웅크립니다. {hair_desc} 뒤를 돌아보아도 이미 빛은 사라진 지 오래, 칠흑 같은 어둠만이 삼킬 듯이 도사리고 있습니다.")
     
-    # 이스터에그 체크
     is_easter_egg = (
         st.session_state.hair_color == "백발" and 
         st.session_state.hair_length == "장발" and 
@@ -395,23 +395,33 @@ elif st.session_state.stage == 3:
 
 
 # ==========================================================
-# 분기 스테이지 구역 (사용자 작성용)
+# 분기 스테이지 구역
 # ==========================================================
 
-# STAGE 11: 1번 선택지(팔 휘두르기) 이후 전개
+# ★ STAGE 11: 1번 선택지(팔 휘두르기) 이후 - 요청하신 서술 반영 완료 ★
 elif st.session_state.stage == 11:
     st.markdown("### 포트 마피아 내부 - 허우적댄 이후")
     st.write("---")
-    st.write("(1번 선택지를 고른 당신에게 이어지는 독자적인 상황 묘사를 이곳에 자유롭게 적어주세요.)")
+    st.write("낯선 목소리의 타박에, 당신의 몸은 절로 움츠러들었습니다. 사람, 사람인 걸까요? 그 사실에 그나마 안심이 되어 어깨를 축 늘어뜨리자, 천을 뒤집어 쓴 형체는 작은 비웃음을 흘립니다.")
+    st.write("")
+    st.write('"안심이 돼?"')
+    st.write("")
+    st.write(f"큭큭, 좋을 대로 웃어 놓고는 이름은? 하고 묻습니다. 어쩐지 짜증이 스멀스멀 기어올라 알려주기 싫은 마음입니다......")
     st.write("")
     
-    if st.button("> (1번 분기 선택지 A)"):
-        st.write("다음 전개 준비 중...")
+    # 세부 분기 선택지
+    if st.button(f"> 이름을 알려준다. (\"{st.session_state.player_name}\"라고 답한다.)"):
+        # 다음 단계 설정을 위한 임시 연출 (추후 개발 가능)
+        st.session_state.love_point += 5
+        st.write("순순히 이름을 밝히자 천 속의 남자가 흥미로운 듯 고개를 까딱입니다. (다음 전개 서술 대기 중)")
         
-    if st.button("> (1번 분기 선택지 B)"):
-        st.write("다음 전개 준비 중...")
+    if st.button("> 비밀! 안 알려줄래요."):
+        st.session_state.love_point += 10  # 유스케가 이런 튕기는 반응을 재밌어할 수 있으니 호감도 업!
+        st.session_state.sub_stats["화술"] += 2 # 당돌한 말솜씨로 화술 소폭 상승
+        st.write("새침하게 비밀이라 소리치자, 천 너머에서 더 크게 큭큭거리는 웃음소리가 터져 나옵니다. (다음 전개 서술 대기 중)")
 
-# STAGE 12: 2번 선택지(몸을 굳힘) 이후 전개
+
+# STAGE 12: 2번 선택지(몸을 굳힘) 이후 전개 (미구현)
 elif st.session_state.stage == 12:
     st.markdown("### 포트 마피아 내부 - 얼어붙은 이후")
     st.write("---")
@@ -420,11 +430,8 @@ elif st.session_state.stage == 12:
     
     if st.button("> (2번 분기 선택지 A)"):
         st.write("다음 전개 준비 중...")
-        
-    if st.button("> (2번 분기 선택지 B)"):
-        st.write("다음 전개 준비 중...")
 
-# STAGE 13: 3번 선택지(태연한 대화) 이후 전개
+# STAGE 13: 3번 선택지(태연한 대화) 이후 전개 (미구현)
 elif st.session_state.stage == 13:
     st.markdown("### 포트 마피아 내부 - 태연하게 대꾸한 이후")
     st.write("---")
@@ -432,7 +439,4 @@ elif st.session_state.stage == 13:
     st.write("")
     
     if st.button("> (3번 분기 선택지 A)"):
-        st.write("다음 전개 준비 중...")
-        
-    if st.button("> (3번 분기 선택지 B)"):
         st.write("다음 전개 준비 중...")
