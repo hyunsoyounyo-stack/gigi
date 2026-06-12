@@ -1,7 +1,7 @@
 import streamlit as st
 
 # 1. 페이지 설정 및 다크 테마 + DoL 블루 링크 스타일 CSS 주입
-st.set_page_config(page_title="포트마피아 내부 상황", layout="centered")
+st.set_config = st.set_page_config(page_title="포트마피아 내부 상황", layout="centered")
 
 st.markdown("""
     <style>
@@ -80,8 +80,9 @@ if "selected_choice_1" not in st.session_state:
 # RPG 시스템 변수 초기화 (체력, 정신력만 유지)
 if "stats" not in st.session_state:
     st.session_state.stats = {"정신력": 50, "체력": 50}
+# ★ 소지품에서 조직원 배지 제거하고 '동전 몇 개'만 남김 ★
 if "inventory" not in st.session_state:
-    st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
+    st.session_state.inventory = ["동전 몇 개"]
 
 
 # 3. 사이드바 - 캐릭터 프로필 / 호감도 / 스탯 / 인벤토리 영역
@@ -163,7 +164,7 @@ with st.sidebar:
         st.session_state.love_point = 0
         st.session_state.selected_choice_1 = None
         st.session_state.stats = {"정신력": 50, "체력": 50}
-        st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
+        st.session_state.inventory = ["동전 몇 개"]
         st.rerun()
 
 
@@ -209,7 +210,7 @@ if st.session_state.stage == 0:
         st.session_state.eye_color = select_eye_color
         
         st.session_state.stats = {"정신력": 50, "체력": 50}
-        st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
+        st.session_state.inventory = ["동전 몇 개"]
         st.session_state.stage = 1
         st.rerun()
 
@@ -301,13 +302,13 @@ elif st.session_state.stage == 2:
     choice_3_text = '> "안녕하세요." 태연하게 말 건넨다.' if is_easter_egg else '> "누구세요?" 태연하게 질문 뱉는다.'
     
     if st.button(choice_3_text):
-        st.session_state.stats["정신력"] += 5  # 입담 대신 정신력이 상승하도록 변경
+        st.session_state.stats["정신력"] += 5
         st.session_state.selected_choice_1 = 3
         st.session_state.stage = 3
         st.rerun()
 
 # ==========================================================
-# STAGE 3: 선택지에 따른 유스케의 반응
+# STAGE 3: 선택지에 따른 유스케의 대사 직후 상황
 # ==========================================================
 elif st.session_state.stage == 3:
     st.markdown("### 포트 마피아 내부")
@@ -333,7 +334,7 @@ elif st.session_state.stage == 3:
         st.write("")
         st.write('"놀랐어? 처음보네, 신입인가봐?"')
         st.write("")
-        st.write("성별을 알 수 없는 목소리가 천 너머로 새어나옵니다. 목소리에는 즐거움이 잔뜩 묻어있는 것 같습니다. 이 사람은 사람을 놀래키는 게 재미있는 걸까요?")
+        st.write('"이 사람은 사람을 놀래키는 게 재미있는 걸까요? 목소리에는 즐거움이 잔뜩 묻어있는 것 같습니다."')
         
     elif st.session_state.selected_choice_1 == 3:
         if is_easter_egg:
@@ -355,41 +356,74 @@ elif st.session_state.stage == 3:
         st.write("성별을 알 수 없는 목소리가 천 너머로 흘러나왔습니다. 장난기가 서린 듯하면서도, 묘한 흥미가 느껴지는 어조입니다.")
 
     st.write("---")
+    # ★ 선택한 번호에 따라 완전히 다른 스테이지 번호로 라우팅시킵니다 ★
     if st.button("> 상황 계속 진행하기"):
-        st.session_state.stage = 4
+        if st.session_state.selected_choice_1 == 1:
+            st.session_state.stage = 11  # 1번 전용 후속 스테이지
+        elif st.session_state.selected_choice_1 == 2:
+            st.session_state.stage = 12  # 2번 전용 후속 스테이지
+        elif st.session_state.selected_choice_1 == 3:
+            st.session_state.stage = 13  # 3번 전용 후속 스테이지
         st.rerun()
 
+
 # ==========================================================
-# STAGE 4: 두 번째 상황 (사용자 직접 작성용)
+# ★ NEW 분기 스테이지 개설구역 ★
 # ==========================================================
-elif st.session_state.stage == 4:
-    st.markdown("### 포트 마피아 내부")
+
+# ==========================================================
+# STAGE 11: 1번 선택지(팔 휘두르기) 이후의 독립된 전개
+# ==========================================================
+elif st.session_state.stage == 11:
+    st.markdown("### 포트 마피아 내부 - 허우적댄 이후")
     st.write("---")
-    st.write("(다음 포트 마피아 내부 상황 묘사를 이곳에 적어주세요.)")
+    st.write("(1번 선택지를 고른 당신에게 이어지는 독자적인 상황 묘사를 이곳에 자유롭게 적어주세요.)")
+    st.write("예시: 유스케가 휘두르는 팔을 피해 천을 걷어내며 얼굴을 드러냅니다.")
     st.write("")
-    st.write('"(대사)"')
+    st.write('유스케: "(1번 상황에 맞는 대사)"')
     st.write("")
     
-    if st.button("> (선택지 4)"):
-        st.session_state.love_point += 10
-        st.session_state.stage = 5
-        st.rerun()
-        
-    if st.button("> (선택지 5)"):
+    if st.button("> (1번 분기 선택지 A)"):
+        # 원하는 보상 수치 설정 가능
         st.session_state.love_point += 5
-        st.session_state.stage = 5
-        st.rerun()
+        st.write("다음 전개 준비 중...")
+        
+    if st.button("> (1번 분기 선택지 B)"):
+        st.session_state.stats["정신력"] += 5
+        st.write("다음 전개 준비 중...")
 
 # ==========================================================
-# STAGE 5: 세 번째 상황
+# STAGE 12: 2번 선택지(몸을 굳힘) 이후의 독립된 전개
 # ==========================================================
-elif st.session_state.stage == 5:
-    st.markdown("### 포트 마피아 내부")
+elif st.session_state.stage == 12:
+    st.markdown("### 포트 마피아 내부 - 얼어붙은 이후")
     st.write("---")
-    st.write("(그 이후의 상황 묘사를 이곳에 적어주세요.)")
+    st.write("(2번 선택지를 고른 당신에게 이어지는 독자적인 상황 묘사를 이곳에 자유롭게 적어주세요.)")
+    st.write("예시: 유스케가 석상처럼 굳은 당신 주변을 살금살금 맴돌며 장난스럽게 쿡쿡 찌릅니다.")
     st.write("")
-    st.write('"(대사)"')
+    st.write('유스케: "(2번 상황에 맞는 대사)"')
     st.write("")
     
-    if st.button("> 다음 상황으로"):
-        st.write("스토리가 준비 중입니다.")
+    if st.button("> (2번 분기 선택지 A)"):
+        st.write("다음 전개 준비 중...")
+        
+    if st.button("> (2번 분기 선택지 B)"):
+        st.write("다음 전개 준비 중...")
+
+# ==========================================================
+# STAGE 13: 3번 선택지(태연한 대화) 이후의 독립된 전개
+# ==========================================================
+elif st.session_state.stage == 13:
+    st.markdown("### 포트 마피아 내부 - 태연하게 대꾸한 이후")
+    st.write("---")
+    st.write("(3번 선택지를 고른 당신에게 이어지는 독자적인 상황 묘사를 이곳에 자유롭게 적어주세요.)")
+    st.write("예시: 당돌한 태도에 재미를 느낀 유스케가 하얀 천 틈새로 눈을 빛내며 가깝게 밀착합니다.")
+    st.write("")
+    st.write('유스케: "(3번 상황에 맞는 대사)"')
+    st.write("")
+    
+    if st.button("> (3번 분기 선택지 A)"):
+        st.write("다음 전개 준비 중...")
+        
+    if st.button("> (3번 분기 선택지 B)"):
+        st.write("다음 전개 준비 중...")
