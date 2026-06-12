@@ -77,9 +77,9 @@ if "love_point" not in st.session_state:
 if "selected_choice_1" not in st.session_state:
     st.session_state.selected_choice_1 = None
 
-# RPG 시스템 변수 초기화
+# RPG 시스템 변수 초기화 (체력, 정신력만 유지)
 if "stats" not in st.session_state:
-    st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
+    st.session_state.stats = {"정신력": 50, "체력": 50}
 if "inventory" not in st.session_state:
     st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
 
@@ -119,7 +119,7 @@ with st.sidebar:
     st.markdown(gauge_html, unsafe_allow_html=True)
     st.write("---")
     
-    # 5대 스탯창 구현
+    # 2대 스탯창 구현
     st.markdown("#### 보유 스탯")
     
     def render_stat_bar(stat_name, value, color):
@@ -135,11 +135,8 @@ with st.sidebar:
         """
         st.markdown(stat_html, unsafe_allow_html=True)
 
-    render_stat_bar("외모", st.session_state.stats["외모"], "#da70d6")
     render_stat_bar("정신력", st.session_state.stats["정신력"], "#00bfff")
     render_stat_bar("체력", st.session_state.stats["체력"], "#32cd32")
-    render_stat_bar("입담", st.session_state.stats["입담"], "#ffd700")
-    render_stat_bar("전투", st.session_state.stats["전투"], "#ff4500")
     
     st.write("---")
     
@@ -165,7 +162,7 @@ with st.sidebar:
         st.session_state.eye_color = "흑안"
         st.session_state.love_point = 0
         st.session_state.selected_choice_1 = None
-        st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
+        st.session_state.stats = {"정신력": 50, "체력": 50}
         st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
         st.rerun()
 
@@ -211,7 +208,7 @@ if st.session_state.stage == 0:
         st.session_state.hair_length = select_hair_length
         st.session_state.eye_color = select_eye_color
         
-        st.session_state.stats = {"외모": 50, "정신력": 50, "체력": 50, "입담": 50, "전투": 50}
+        st.session_state.stats = {"정신력": 50, "체력": 50}
         st.session_state.inventory = ["조직원 배지", "동전 몇 개"]
         st.session_state.stage = 1
         st.rerun()
@@ -259,7 +256,7 @@ elif st.session_state.stage == 1:
         st.rerun()
 
 # ==========================================================
-# STAGE 2: 이어지는 연출 (★선택지 가변 로직 반영★)
+# STAGE 2: 이어지는 연출
 # ==========================================================
 elif st.session_state.stage == 2:
     st.markdown("### 포트 마피아 내부")
@@ -301,17 +298,16 @@ elif st.session_state.stage == 2:
         st.session_state.stage = 3
         st.rerun()
         
-    # 조건에 따른 3번 선택지 이름 가변 출력
     choice_3_text = '> "안녕하세요." 태연하게 말 건넨다.' if is_easter_egg else '> "누구세요?" 태연하게 질문 뱉는다.'
     
     if st.button(choice_3_text):
-        st.session_state.stats["입담"] += 5
+        st.session_state.stats["정신력"] += 5  # 입담 대신 정신력이 상승하도록 변경
         st.session_state.selected_choice_1 = 3
         st.session_state.stage = 3
         st.rerun()
 
 # ==========================================================
-# STAGE 3: 선택지에 따른 유스케의 반응 (★대사 흐름 수정★)
+# STAGE 3: 선택지에 따른 유스케의 반응
 # ==========================================================
 elif st.session_state.stage == 3:
     st.markdown("### 포트 마피아 내부")
@@ -329,7 +325,6 @@ elif st.session_state.stage == 3:
         st.write('"하아...... 신입? 멋대로 움직이지마, 진짜 귀신이라도 나올지 모르잖아?"')
         st.write("")
         st.write("성별을 알 수 없는 목소리가 천 너머로 새어나옵니다. 상대를 귀신으로 착각한 속내를 들킨 것만 같아 당신의 심장이 콩닥콩닥해졌습니다.")
-        st.session_state.stats["정신력"] -= 5
         
     elif st.session_state.selected_choice_1 == 2:
         st.write("갑작스런 상황에 반응도 못하고 멈췄습니다. 큭, 기분 나쁘게 웃는 소리가 들립니다.")
@@ -342,7 +337,6 @@ elif st.session_state.stage == 3:
         
     elif st.session_state.selected_choice_1 == 3:
         if is_easter_egg:
-            # 이스터에그 상황일 때 ("안녕하세요.")
             st.write("딱히 놀라지도 않았습니다. 아니, 그저 별 생각이 없었다는 것에 가까웠던 것 같습니다. 부딪치자마자 뚫어져라 상대의 천을 응시하더니, 어색한 상황 속에서 먼저 입을 열어 인사를 건넸습니다.")
             st.write("")
             st.write('"안녕하세요."')
@@ -350,15 +344,15 @@ elif st.session_state.stage == 3:
             st.write("")
             st.write('"......넌 무슨, 놀라지도 않아?"')
         else:
-            # 일반 상황일 때 ("누구세요?")
-            st.write("귀신이란 게 존재할 리가 없잖아요! 두려움보다는 호기심이 앞서 떠오르는 질문 그대로 던졌습니다.")
+            st.write("어둡고 기괴한 공간이지만 크게 위축되지 않은 채, 당신은 허공의 백색 형체를 똑바로 바라보며 차분하게 목소리를 냈습니다.")
             st.write("")
             st.write('"누구세요?"')
-            st.write("순간 천을 뒤집어쓴 형체가 굳습니다. 황당한 걸까요? 정체가 더 궁금해졌습니다.")
+            st.write("질문을 뱉자마자 예상 밖이라는 듯 천 너머에서 어이없는 작은 숨소리가 훅 새어나옵니다.")
             st.write("")
-            st.write('"......그걸 말이라고 해?"')
-            st.write("")
-            st.write("성별을 알 수 없는 목소리가 천 너머로 새어나옵니다. 어쩐지 허탈해보이는 어조입니다.")
+            st.write('"......하, 신입 주제에 제법 당돌하네? 보통은 소리부터 지르던데."')
+            
+        st.write("")
+        st.write("성별을 알 수 없는 목소리가 천 너머로 흘러나왔습니다. 장난기가 서린 듯하면서도, 묘한 흥미가 느껴지는 어조입니다.")
 
     st.write("---")
     if st.button("> 상황 계속 진행하기"):
